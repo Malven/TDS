@@ -10,6 +10,8 @@ public class Enemy : LivingEntity {
 		Attacking
 	}
 
+    public ParticleSystem deathEffect;
+
 	State currentState;
 	NavMeshAgent pathfinder;
 	Transform target;
@@ -44,7 +46,14 @@ public class Enemy : LivingEntity {
 		}
 	}
 
-	void OnTargetDeath(){
+    public override void TakeHit( float damage, Vector3 hitPoint, Vector3 hitDirection ) {
+        if(damage >= health ) {
+            Destroy( Instantiate( deathEffect.gameObject, hitPoint, Quaternion.FromToRotation( Vector3.forward, hitDirection ) ) as GameObject, deathEffect.startLifetime );
+        }
+        base.TakeHit( damage, hitPoint, hitDirection );
+    }
+
+    void OnTargetDeath(){
 		hasTarget = false;
 		currentState = State.Idle;
 	}
