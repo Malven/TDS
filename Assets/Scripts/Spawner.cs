@@ -17,32 +17,50 @@ public class Spawner : MonoBehaviour {
     LivingEntity playerEntity;
     Transform playerT;
 
-    float timeBetweenCampChecks = 2f;
-
+    float timeBetweenCampingChecks = 2f;
+    float campThresholdDistance = 2f;
+    float nextCampCheckTime;
+    Vector3 campPositionOld;
+    bool isCamping;
+    bool isDisabled;
     
 	void Start() {
         playerEntity = FindObjectOfType<Player>();
         playerT = playerEntity.transform;
+        playerEntity.OnDeath += OnPlayerDeath;
+
+        nextCampCheckTime = timeBetweenCampingChecks + Time.time;
+        campPositionOld = playerT.position;
         map = GameObject.FindObjectOfType<MapGenerator>();
 		NextWave();
 	}
 
 	void Update() {
-		if(enemiesRemainingToSpawn > 0 && Time.time > nextSpawnTime) {
-			enemiesRemainingToSpawn--;
-			nextSpawnTime = Time.time + currentWave.timeBetweenSpawns;
+        if ( !isDisabled ) {
+            if ( Time.time > nextCampCheckTime ) {
+                nextCampCheckTime = Time.time + timeBetweenCampingChecks;
+                isCamping = ( Vector3.Distance( playerT.position, campPositionOld ) < campThresholdDistance );
+                campPositionOld = playerT.position;
+            }
 
-            StartCoroutine( SpawnEnemy() );
+            if ( enemiesRemainingToSpawn > 0 && Time.time > nextSpawnTime ) {
+                enemiesRemainingToSpawn--;
+                nextSpawnTime = Time.time + currentWave.timeBetweenSpawns;
 
-		}
+                StartCoroutine( SpawnEnemy() );
+            }
+        }
 	}
 
     IEnumerator SpawnEnemy() {
         float spawnDelay = 1f;
         float tileFlashSpeed = 4f;
 
-        Transform randomTile = map.GetRandomOpenTile();
-        Material tileMat = randomTile.GetComponent<Renderer>().material;
+        Transform spawnTile = map.GetRandomOpenTile();
+        if ( isCamping ) {
+            spawnTile = map.GetTileFromPosition( playerT.position );
+        }
+        Material tileMat = spawnTile.GetComponent<Renderer>().material;
         Color originalColor = tileMat.color;
         Color flashColor = Color.red;
         float spawnTimer = 0;
@@ -52,8 +70,12 @@ public class Spawner : MonoBehaviour {
             spawnTimer += Time.deltaTime;
             yield return null;
         }
-        Enemy spawnedEnemy = Instantiate( enemy, randomTile.position + Vector3.up, Quaternion.identity ) as Enemy;
+        Enemy spawnedEnemy = Instantiate( enemy, spawnTile.position + Vector3.up, Quaternion.identity ) as Enemy;
         spawnedEnemy.OnDeath += OnEnemyDeath;
+    }
+
+    void OnPlayerDeath() {
+        isDisabled = true;
     }
 
 	void OnEnemyDeath() {
