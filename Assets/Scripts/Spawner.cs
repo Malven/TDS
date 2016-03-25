@@ -8,9 +8,9 @@ public class Spawner : MonoBehaviour {
     public bool devMode;
 
 	Wave currentWave;
-	int currentWaveNumber;
-	int enemiesRemainingToSpawn;
-	int enemiesRemainingAlive;
+	public int currentWaveNumber;
+	public int enemiesRemainingToSpawn;
+	public int enemiesRemainingAlive;
 	float nextSpawnTime;
     MapGenerator map;
 
@@ -23,6 +23,7 @@ public class Spawner : MonoBehaviour {
     Vector3 campPositionOld;
     bool isCamping;
     bool isDisabled;
+    GameUI gameUI;
 
     public event System.Action<int> OnNewWave;
     
@@ -34,6 +35,7 @@ public class Spawner : MonoBehaviour {
         nextCampCheckTime = timeBetweenCampingChecks + Time.time;
         campPositionOld = playerT.position;
         map = GameObject.FindObjectOfType<MapGenerator>();
+        gameUI = GameObject.FindGameObjectWithTag("GameUImanager").GetComponent<GameUI>();
 		NextWave();
 	}
 
@@ -92,8 +94,15 @@ public class Spawner : MonoBehaviour {
 
 	void OnEnemyDeath() {
 		enemiesRemainingAlive--;
+        if(!currentWave.infinite)
+            gameUI.enemiesLeftText.text = "Enemies left: " + enemiesRemainingAlive;
+        else
+            gameUI.enemiesLeftText.text = "Enemies left: Infinite";
 
-		if(enemiesRemainingAlive == 0) {
+        gameUI.score += (int)((currentWave.enemyCount * currentWave.moveSpeed) / currentWave.hitsToKillPlayer);
+        gameUI.scoreText.text = "Score: " + gameUI.score;
+
+        if (enemiesRemainingAlive == 0) {
 			NextWave();
 		}
 	}
@@ -115,6 +124,17 @@ public class Spawner : MonoBehaviour {
             OnNewWave( currentWaveNumber );
         }
         ResetPlayerPosition();
+
+        if (!currentWave.infinite)
+        {
+            gameUI.waveText.text = "Wave #: " + currentWaveNumber;
+            gameUI.enemiesLeftText.text = "Enemies left: " + enemiesRemainingAlive;
+        }
+        else
+        {
+            gameUI.waveText.text = "Wave #: Infinite";
+            gameUI.enemiesLeftText.text = "Enemies left: Infinite";
+        }
     }
 
 	[System.Serializable]
