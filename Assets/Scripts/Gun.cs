@@ -38,31 +38,31 @@ public class Gun : MonoBehaviour {
 
 		if(Time.time > nextShotTime){
 
-            if( fireMode == FireMode.Burst ) {
-                if ( shotsRemainingInBurst == 0 ) {
-                    return;
-                }                    
-                shotsRemainingInBurst--;
+	            if( fireMode == FireMode.Burst ) {
+	                if ( shotsRemainingInBurst == 0 ) {
+	                    return;
+	                }                    
+	                shotsRemainingInBurst--;
 
-            }
+	            }
 
-            else if ( fireMode == FireMode.Single ) {
-                if ( !triggerReleasedSinceLastShot ) {
-                    return;
-                }
-                shotsRemainingInBurst--;
+	            else if ( fireMode == FireMode.Single ) {
+	                if ( !triggerReleasedSinceLastShot ) {
+	                    return;
+	                }
+	                shotsRemainingInBurst--;
 
-            }
+	            }
 
-            for ( int i = 0; i < projectileSpawn.Length; i++ ) {
-                nextShotTime = Time.time + msBetweenShot / 1000;
-                Projectile newProjectile = Instantiate( projectile, projectileSpawn[i].position, projectileSpawn[i].rotation ) as Projectile;
-                newProjectile.SetSpeed( muzzleVelocity );
-            }
+	            for ( int i = 0; i < projectileSpawn.Length; i++ ) {
+	                nextShotTime = Time.time + msBetweenShot / 1000;
+	                Projectile newProjectile = Instantiate( projectile, projectileSpawn[i].position, projectileSpawn[i].rotation ) as Projectile;
+	                newProjectile.SetSpeed( muzzleVelocity );
+	            }
 
-            Instantiate( shell, shellEjection.position, shellEjection.rotation );
-            muzzleFlash.Activate();
-        }
+	            Instantiate( shell, shellEjection.position, shellEjection.rotation );
+	            muzzleFlash.Activate();
+	        }
 
 	}
 

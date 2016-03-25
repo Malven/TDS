@@ -26,9 +26,10 @@ public class Shell : MonoBehaviour {
         Material mat = GetComponent<Renderer>().material;
         Color initialColor = mat.color;
 
-        while (percent < 1) {
-            percent = Time.deltaTime * fadeSpeed;
-            mat.color = Color.Lerp( initialColor, Color.clear, percent );
+        while (percent < 1)
+        {
+            percent += Time.deltaTime * fadeSpeed;
+            mat.color = Color.Lerp(initialColor, Color.clear, percent);
             yield return null;
         }
 
