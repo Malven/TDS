@@ -26,7 +26,6 @@ public class Enemy : LivingEntity {
 	bool hasTarget;
 	float damage = 1f;
 
-
     void Awake() {
         pathfinder = GetComponent<NavMeshAgent>();
 
@@ -63,7 +62,9 @@ public class Enemy : LivingEntity {
 
     public override void TakeHit( float damage, Vector3 hitPoint, Vector3 hitDirection ) {
         if(damage >= health ) {
-            Destroy( Instantiate( deathEffect.gameObject, hitPoint, Quaternion.FromToRotation( Vector3.forward, hitDirection ) ) as GameObject, deathEffect.startLifetime );
+            GameObject temp = Instantiate( deathEffect.gameObject, hitPoint, Quaternion.FromToRotation( Vector3.forward, hitDirection ) ) as GameObject;
+            temp.GetComponent<Renderer>().material.color = originalColor;
+            Destroy(temp, deathEffect.startLifetime);
         }
         base.TakeHit( damage, hitPoint, hitDirection );
     }
