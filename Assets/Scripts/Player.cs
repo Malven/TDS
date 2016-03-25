@@ -17,7 +17,7 @@ public class Player : LivingEntity {
 		base.Start();
 		controller = GetComponent<PlayerController>();
 		viewCamera = Camera.main;
-		gunController = GetComponent<GunController>();
+		gunController = GetComponent<GunController>();       
 	}
 	
 	// Update is called once per frame
