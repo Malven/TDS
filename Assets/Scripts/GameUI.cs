@@ -13,6 +13,7 @@ public class GameUI : MonoBehaviour {
     public Text scoreText;
     public Text enemiesLeftText;
     public int score;
+    public Text playerNameText;
     Player player;
 
 	// Use this for initialization
@@ -21,6 +22,7 @@ public class GameUI : MonoBehaviour {
         player = FindObjectOfType<Player>();
         healthBarSlider.maxValue = player.startingHealth;
         scoreText.text = "Score: 0";
+        playerNameText.text = PlayerPrefs.GetString("username").ToString();
 	}
 	
 	void OnGameOver() {
